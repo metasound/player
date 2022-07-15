@@ -1,4 +1,4 @@
-const Node = require('musiphone/src/node')();
+const Node = require('../musiphone/src/node')();
 const LoggerAdapter = require('spreadable/src/logger/transports/adapter')();
 
 module.exports = (Parent) => {  

@@ -1,1 +1,1 @@
-module.exports = Object.assign({}, require('musiphone/src/utils'));
+module.exports = Object.assign({}, require('./musiphone/src/utils'));

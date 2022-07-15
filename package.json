@@ -13,15 +13,15 @@
     "face": "node index.js --face=true",
     "local": "node index.js --hostname=localhost --initialNetworkAddress=localhost:2790 --port=2790",
     "husky": "npm i -D --no-package-lock husky",
-    "mm-install-deps": "cross-env-shell \"cd ./node_modules/musiphone; npm i && npm r husky\"",
-    "mm-install-plugins": "cross-env-shell \"cd ./node_modules/musiphone; npm run cordova-init\"",
+    "mm-install-deps": "cross-env-shell \"cd ./musiphone; npm i && npm r husky\"",
+    "mm-install-plugins": "cross-env-shell \"cd ./musiphone; npm run cordova-init\"",
     "mm-install": "npm run mm-install-deps && npm run mm-install-plugins",
-    "mm-build-mobile": "cross-env-shell MUSIPHONE_API_ADDRESS=../../faces.json \"cd ./node_modules/musiphone; npm run build-mobile-prod\"",
-    "mm-release-mobile-debug": "cross-env-shell \"cd ./node_modules/musiphone; npm run release-mobile\"",
-    "mm-release-mobile-release": "cross-env-shell \"cd ./node_modules/musiphone; npm run release-mobile-prod\"",
+    "mm-build-mobile": "cross-env-shell MUSIPHONE_API_ADDRESS=../../faces.json \"cd ./musiphone; npm run build-mobile-prod\"",
+    "mm-release-mobile-debug": "cross-env-shell \"cd ./musiphone; npm run release-mobile\"",
+    "mm-release-mobile-release": "cross-env-shell \"cd ./musiphone; npm run release-mobile-prod\"",
     "mm-release-mobile": "npm run mm-release-mobile-debug && npm run mm-release-mobile-release",
-    "mm-copy-debug": "cross-env-shell cp ./node_modules/musiphone/dist/android/musiphone.debug.apk ./musiphone.debug.apk",
-    "mm-copy-release": "cross-env-shell cp ./node_modules/musiphone/dist/android/musiphone.release.aab ./musiphone.release.aab",
+    "mm-copy-debug": "cross-env-shell cp ./musiphone/dist/android/musiphone.debug.apk ./musiphone.debug.apk",
+    "mm-copy-release": "cross-env-shell cp ./musiphone/dist/android/musiphone.release.aab ./musiphone.release.aab",
     "mm-copy": "npm run mm-copy-debug && npm run mm-copy-release",
     "make-mobile": "npm run mm-install && npm run mm-build-mobile && npm run mm-release-mobile && npm run mm-copy && npm run husky"
   },
@@ -50,13 +50,11 @@
   "license": "MIT",
   "dependencies": {
     "museria-global": "^0.2.42",
-    "musiphone": "^0.2.29",
     "spreadable": "^0.2.26"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
-    "husky": "^4.3.8",
     "yargs": "^16.2.0"
   },
   "repository": {
