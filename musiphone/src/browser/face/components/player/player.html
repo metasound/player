@@ -1,0 +1,110 @@
+<div class="${ utils.class({ invisible: !this.isPlayerVisible }) }">
+  <div class="player-footer"></div>
+  <div class="player" on-touchstart="${ event.stopPropagation() }">  
+    <audio importance="high"></audio>
+    <div class="player-progress">   
+      <div class="player-progress-buffer" style="width: ${ this.buffer }px">
+        <div class="player-progress-actual" style="width: ${ this.progress }px">
+          <div class="px-3 py-2 d-block">
+            <div class="player-progress-mask">.</div>
+            <div class="player-progress-title ellipsis">${ this.song? this.song.title: '' }</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex p-3">
+      <div class="player-image rounded-circle overflow-hidden">
+        <i class="fas fa-music"></i>
+        <img 
+          loading="viewport"
+          url="${ this.song? (this.song.coverLinkCache || this.song.coverLink): '' }"
+          hidden-error="true"
+        >
+      </div>
+      <div class="player-content pl-3">
+        <if is="${ !window.cordova }">
+          <div class="player-volume d-none d-sm-block mr-5">
+            <input 
+              type="range" 
+              class="form-control-range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value="${ this.volume }" 
+              on-input="${ this.setVolume(event.target.value) }"
+            >
+            <div style="width: ${ this.volume * 100 }%"></div>
+          </div>        
+        </if>
+        <div class="player-close">
+          <a 
+            href="javascript:;"
+            on-click="${ this.closePlayer() }"
+          >
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
+        <div class="player-buttons text-right">
+          <if is="${ this.isLoading }">
+            <a>
+              <i class="fa fa-spinner fa-spin"></i>
+            </a>
+          </if>
+          <else-if is="${ !this.isPlaying }">
+            <a 
+              href="javascript:;" 
+              on-click="${ this.play() }" 
+              disabled="${ this.audioError }"
+            >
+              <i class="fas fa-play"></i>
+            </a>
+          </else-if>
+          <else>
+            <a 
+              href="javascript:;" 
+              on-click="${ this.pause() }"
+            >
+              <i class="fas fa-pause"></i>
+            </a>
+          </else>
+          <span>
+            <a 
+              href="javascript:;"
+              disabled="${ !this.hasPrevSong }"
+              on-click="${ this.setPrevSong() }"
+            >
+              <i class="fas fa-backward"></i>
+            </a>
+          </span>
+          <span>
+            <a               
+              href="javascript:;"
+              disabled="${ !this.hasNextSong }"
+              on-click="${ this.setNextSong() }"
+            >
+              <i class="fas fa-forward"></i>
+            </a>
+          </span>
+          <!-- <span>
+            <a 
+              href="javascript:;"
+              on-click="${ this.toggleRepeat() }"
+              class="${ utils.class({active: this.repeat}) }"
+            >
+              <i class="fas fa-redo-alt"></i>
+            </a>
+          </span> -->
+          <span>
+            <a 
+              href="javascript:;"
+              on-click="${ this.toggleRandom() }"
+              class="${ utils.class({active: this.random}) }"
+            >
+              <i class="fas fa-random"></i>
+            </a>
+          </span>               
+        </div>
+      </div> 
+    </div> 
+  </div>
+</div>

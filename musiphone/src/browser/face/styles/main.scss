@@ -1,0 +1,132 @@
+@import './vars.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '~@fortawesome/fontawesome-free/scss/solid.scss';
+@import '~@fortawesome/fontawesome-free/scss/brands.scss';
+
+@font-face {
+  font-family: ArchivoRegular;
+  src: url("../fonts/Archivo-Regular.ttf")
+}
+
+@font-face {
+  font-family: ProximaNova;
+  src: url("../fonts/proxima-nova.ttf")
+}
+
+@font-face {
+  font-family: OpenSans;
+  src: url("../fonts/open-sans.ttf")
+}
+
+* {
+  padding: 0;
+  margin: 0; 
+}
+
+body {
+  font-family: ArchivoRegular;
+  background: $body-bg;
+  height: 100%;
+  overflow-y: scroll;
+  color: #fff;
+  touch-action: pan-y;
+}
+
+a {
+  color: lighten($teal, 10%);
+  text-decoration: none;  
+
+  &:hover {
+    color: lighten($teal, 10%);
+    text-decoration: underline;
+  }
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.btn {
+  padding: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 1em;
+  height: 3em;
+
+  &:focus, &:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }  
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
+}
+
+[disabled] {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.4 !important;
+}
+
+input {
+  border-radius: 50px !important;
+}
+
+button {
+  border-radius: 7px !important;
+}
+
+input.form-control {
+  border: 2px solid white !important;
+  background-color: transparent;
+}
+
+.input-group-lg input[type=text] {
+  padding: 0.42rem 1rem 0.45rem 1rem;  
+  height: auto;
+}
+
+.alert {
+  margin-bottom: 0;
+  word-break: break-all;
+
+  & .close {
+    color: $light; 
+    text-shadow: none;
+    outline: none;
+  }
+}
+
+.alert-success {
+  color: #aec2d3;
+  background-color: #062840;
+  border-color: darken($teal, 20%);
+}
+
+.alert-danger {
+  color: #d3aeae;
+  background-color: #250d0d;
+  border-color: $red;
+}
+
+.alert-warn {
+  color: #d3c6ae;
+  background-color: #2c1c0f;
+  border-color: darken($orange, 20%);
+}
+
+.alert-info {
+  color: #c5c5c5;
+  background-color: #1b1a1a;
+  border-color: $gray;
+}
+
+.hidden-file {
+  left: -10000px;
+  visibility: hidden;
+  position: absolute;
+}

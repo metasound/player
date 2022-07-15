@@ -1,0 +1,92 @@
+@import '../../styles/vars.scss';
+
+@import '~bootstrap/scss/bootstrap-grid.scss';
+
+.playlists {
+  position: relative;
+  top: 0.5em;
+
+  & .scroll-content {
+    padding-bottom: 0.8em;
+  }
+
+  & .scrollbar-track {
+    background: darken($cyan, 65%) !important;
+    height: 7px !important;
+  }
+
+  & .scrollbar-thumb {
+    background: darken($cyan, 60%) !important;
+  }
+
+  &-list {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0;
+  
+    & > li {
+      margin-right: 0.3em;
+      color: $cyan;
+      white-space: nowrap;
+      cursor: pointer;
+      font-size: 0.9em;
+      padding: 0.4em 0.8em;
+      border: 1px darken($cyan, 50%) solid;
+      background: darken($cyan, 70%);
+      border-radius: 2px;
+      $sizes: xs, sm, md, lg, xl;
+
+      @for $i from 1 through length($sizes) {
+        $item: nth($sizes, $i);
+
+        @include media-breakpoint-up($item) { 
+          & .title {
+            max-width: #{(60 - $i * 7)}vw;
+          }
+        }
+      }
+
+      & .title {
+        display: inline-block;
+        vertical-align: middle;
+        margin-top: -0.1em;
+      }
+
+      @mixin active {
+        text-decoration: none;
+        color: white;
+        background: darken($cyan, 60%);
+      }
+
+      &.active{
+        @include active;
+      }
+
+      &:hover{
+        @include active;
+      }      
+  
+      & a {
+        color: lighten($cyan, 5%);
+        opacity: 0.4;
+        margin-left: 0.4em;
+        font-size: 0.95em;
+        vertical-align: middle;
+        text-decoration: none;
+
+        &.playlist-remove {
+          font-size: 1.1em;
+        }
+    
+        &:hover {
+          opacity: 1;
+        }
+
+        &.active {
+          opacity: 1;
+        }
+      }    
+    }
+  } 
+}

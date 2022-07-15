@@ -1,0 +1,342 @@
+<div class="app container-fluid">
+  <modal-window 
+    body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 ${ this.event.type }"
+    is-open="${ this.event.isActive }"
+    on-is-open="${ this.changeEventActivity(event.detail) }"
+    z-index="20000"
+  >
+    ${ this.event.message }
+    <div hidden="${ !this.event.confirm }" class="row mt-3">
+      <div class="col-6">
+        <button 
+          type="submit" 
+          class="btn btn-primary form-control"
+          on-click="${ this.confirm(true) }"
+          disabled="${ this.isConfirming }"
+        >
+          Sí
+        </button>
+      </div>
+      <div class="col-6">
+        <button 
+          type="submit"
+          class="btn btn-secondary form-control"
+          on-click="${ this.confirm(false) }"
+          disabled="${ this.isConfirming }"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </modal-window> 
+  <modal-window 
+    body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+    is-open="${ this.apiAddressModal }"
+    on-is-open="${ this.apiAddressModal = event.detail }"
+    unclosable="${ this.apiAddressModalUnclosable }"
+  >    
+    <form 
+      class="playlist-load"
+      on-submit="${ event.preventDefault(); this.setApiAddress(); }"
+    >                
+      <div class="form-group w-100 mt-3">
+        <input 
+          type="text"
+          class="form-control"
+          focus="${ this.apiAddressModal }"
+          value="${ this.apiAddressInputValue }"
+          on-input="${ this.apiAddressInputValue = event.target.value; }"
+          placeholder="Ingrese una dirección API"
+          required
+        />
+      </div>
+      <button 
+        type="submit"
+        class="btn form-control btn-primary"
+        disabled="${ this.isCheckingApiAddress }"
+      >
+        Confirmar <i hidden="${ !this.isCheckingApiAddress }" class="fas fa-circle-notch fa-spin"></i>
+      </button>
+    </form>   
+  </modal-window>
+  <menu 
+    data="${ this.menu }" 
+    is-open="${ this.menuModal }" 
+    on-is-open="${ this.menuModal = event.detail }"
+  ></menu>
+  <input 
+    type="file"
+    id="load-config"
+    class="hidden-file"
+    on-change="${ this.importConfig(event.target.files[0]) }"
+    accept="application/json"
+  >
+  <header class="header row p-4 align-items-center">
+    <div class="col-10 col-md-4 col-xl-3 p-0">
+      <a state="app" class="logo">  
+        <img src="./img/logo.svg" class="logo-img">
+        <div>
+          <div class="logo-title">MetaSound FTW</div>
+          <!-- <div class="logo-description">decentralized music player</div> -->
+        </div>
+      </a>
+    </div>
+    <div class="col-2 col-md-8 col-xl-9 p-0 pl-4 text-right">
+      <div class="d-flex flex-row-reverse align-items-center">
+        <a 
+          href="javascript:;" 
+          on-click="${ this.menuModal = !this.menuModal }" 
+          class="menu-icon d-block d-lg-none"
+        >
+          <i class="fas fa-bars "></i>
+        </a>
+        <div class="d-none d-md-block">
+          <ul in="${ this.menu }" class="menu pt-1">           
+            <li class="${ this.loopIndex > 1? 'd-none d-lg-block': '' }">                     
+              <a 
+                on-click="${ this.loopValue.handler && this.loopValue.handler() }"
+                href="${ this.loopValue.href || 'javascript:;' }" 
+                target="${ this.loopValue.blank? '_blank': '' }"
+              >
+                <i class="${ this.loopValue.icon }" aria-hidden="true"></i>
+                ${ this.loopValue.text }
+              </a>
+            </li>           
+          </ul> 
+        </div>
+      </div>
+    </div> 
+  </header>
+  <div class="content">
+    <if is="${ !this.wrongPlaylistHash }">
+      <div class="row">
+        <div class="song-search col-lg-6 col-12 px-4 pt-0 pt-lg-3">
+          <div class="song-search-input input-group input-group-lg">
+            <i hidden="${ this.isSongFinding }" class="fas fa-search fa-lg"></i>
+            <i hidden="${ !this.isSongFinding }" class="fas fa-circle-notch fa-spin fa-lg song-search-loading"></i>
+            <i 
+              on-click="${ this.resetSearchEvent(); this.searchInputValue = ''; this.searchInputFocus = true }"
+              hidden="${ !this.searchEvent.status }" class="fa fa-times fa-lg song-search-close"
+            ></i>            
+            <input 
+              type="text" 
+              class="form-control"
+              placeholder="Buscar"
+              debounce="2500"
+              value="${ this.searchInputValue }"
+              focus="${ this.searchInputFocus }"
+              on-debounce="${ this.searchInputValue = event.target.value; this.findSong() }"
+              on-focus="${ this.searchInputFocus = true }"
+              on-blur="${ this.searchInputFocus = false }"
+            />
+          </div>
+          <if is="${ this.searchEvent.status }" class="d-block mt-3">
+            <if 
+              recreate
+              is="${ this.searchEvent.status != 'success'}" 
+              class="d-block search-alert alert alert-${ this.searchEvent.status }"
+            >  
+              ${ this.searchEvent.message }
+            </if>
+            <else>     
+              <for in="${ this.searchEvent.meta.songs || [] }" class="found-songs">
+                <song-card 
+                  info="${ this.loopValue }"
+                  buttons="${ { cache: false, remove: false } }"
+                  on-click="${ this.selectFoundSong(this.loopValue) }"
+                  on-add="${ this.addSong(this.loopValue) }"
+                  class="d-block mt-2"
+                ></song-card>
+              </for>
+            </else>
+          </if>
+          <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="mt-3 d-block">     
+            <if 
+              is="${ !this.activePlaylist.link }" 
+              class="playlist-alert d-block alert alert-warn"
+            >   
+              Hay algunos cambios en la lista de reproducción. Guárdalo en la web para obtener un enlace.            </if>
+            <else class="playlist-alert d-block alert alert-success ${ this.linkIsBlinking? 'playlist-alert--blinking': '' }"> 
+              <a 
+                hidden="${ !window.cordova }"
+                href="javascript:;" 
+                class="playlist-alert-share playlist-alert-btn"
+                on-click="${ this.sharePlaylistLink() }"
+              >
+                <i class="fas fa-share-alt"></i>
+              </a>
+              <a 
+                href="javascript:;" 
+                class="playlist-alert-copy playlist-alert-btn" 
+                on-click="${ this.copyPlaylistLink() }"
+              >
+                <i class="fas fa-copy"></i> 
+                 Copiar lista de reproducción
+              </a>  
+              <tooltip message="${ this.activePlaylist.link }">
+                <!-- <a 
+                  href="${ window.cordova? 'javascript:;': this.activePlaylist.link }" 
+                  on-click="${ window.cordova && window.open(this.activePlaylist.link, '_system'); !!window.cordova }" 
+                  target="_blank"
+                >            
+                  ${ (this.activePlaylist.link || '').length > 90? this.activePlaylist.link.slice(0, 90) + '...': this.activePlaylist.link }  
+                </a> -->
+              </tooltip>
+            </else>
+          </if>         
+        </div>
+        <div class="col-lg-6 col-12 px-4 pt-3 pt-lg-0 pt-lg-3">
+          <div>
+            <div class="row">
+              <div class="col-6 pr-2">
+                <button 
+                  disabled="${ !this.activePlaylist || !this.activePlaylist.songs.length }"
+                  class="btn form-control btn-lg btn-primary" 
+                  on-click="${ this.newPlaylist() }"
+                > 
+                  Nueva lista
+                </button>
+              </div>  
+              <div class="col-6 pl-2">
+                <modal-window 
+                  body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+                  is-open="${ this.loadPlaylistModal }"
+                  on-is-open="${ this.loadPlaylistModal = event.detail }"
+                >    
+                  <form 
+                    class="playlist-load"
+                    on-submit="${ event.preventDefault(); this.loadPlaylistLink(); }"
+                  >                
+                    <div class="form-group w-100 mt-3">
+                      <input 
+                        type="text"
+                        class="form-control"
+                        focus="${ this.loadPlaylistModal }"
+                        value="${ this.loadPlaylistInputValue }"
+                        on-input="${ this.loadPlaylistInputValue = event.target.value; }"
+                        placeholder="Ingrese el enlace de una lista de reproducción"
+                        required
+                      />
+                    </div> 
+                    <button 
+                      type="submit"
+                      class="btn form-control btn-primary"
+                      disabled="${ this.isPlaylistLoading }"
+                    >
+                      Confirmar <i hidden="${ !this.isPlaylistLoading }" class="fas fa-circle-notch fa-spin"></i>
+                    </button>  
+                    <div class="playlist-load-or my-3">- O -</div>
+                    <button 
+                      type="button"
+                      class="btn form-control btn-lg btn-primary"
+                      on-click="${ this.chooseLoadingFile(); }"
+                      disabled="${ this.isPlaylistLoading }"
+                    > 
+                      Cargar desde archivo
+                    </button>
+                  </form>   
+                </modal-window>
+                <button 
+                  class="btn form-control btn-lg btn-primary"
+                  on-click="${ this.loadPlaylistModal = true }"
+                > 
+                  Cargar Lista
+                </button>  
+                <input 
+                  type="file"
+                  id="load-file"
+                  class="hidden-file" 
+                  on-change="${ this.loadFile(event.target.files[0]) }"
+                  accept="audio/x-mpegurl"
+                >
+              </div>            
+            </div>
+            <div class="row mt-3">
+              <div class="col-6 pr-2">
+                <modal-window 
+                  body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+                  is-open="${ this.saveToWebModal }"
+                  on-is-open="${ this.saveToWebModal = event.detail }"
+                >    
+                  <form 
+                    class="playlist-save"
+                    on-submit="${ event.preventDefault(); this.savePlaylist(); }"
+                  >                
+                    <div class="form-group w-100 mt-3">
+                      <input 
+                        type="text"
+                        class="form-control"
+                        focus="${ this.saveToWebModal }"
+                        value="${ this.saveToWebTitle }"
+                        on-input="${ this.saveToWebTitle = event.target.value; }"
+                        placeholder="Introduce un título"                      
+                      />
+                    </div> 
+                    <button 
+                      type="submit"
+                      class="btn form-control btn-secondary"
+                      disabled="${ this.isPlaylistSaving }"
+                    >
+                      Confirmar <i hidden="${ !this.isPlaylistSaving }" class="fas fa-circle-notch fa-spin"></i>
+                    </button>  
+                  </form>   
+                </modal-window>
+                <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveToWebModal = true }">         
+                  Guardar en la Web
+                </button>
+              </div>  
+              <div class="col-6 pl-2">
+                <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveFile() }"> 
+                  Guardar en archivo
+                </button>  
+              </div>   
+            </div>
+          </div>         
+        </div>   
+      </div>      
+      <if is="${ this.playlists.length }" class="row">
+        <div class="col-12 px-4 pt-4">
+          <playlists 
+            data="${ this.playlists }"
+            highlight="${ this.activePlaylist? !!this.activePlaylist.link: false }"
+            on-select="${ this.selectPlaylist(event.detail) }"
+          >
+          </playlists>
+        </div>
+      </if>
+      <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="row">
+        <div class="col-12 px-4 py-3">
+          <playlist data="${ this.activePlaylist }" on-sort="${ this.changePlaylistOrder(event.detail) }"></playlist>
+        </div>
+      </if>
+      <if  is="${ !this.activePlaylist || !this.activePlaylist.songs.length }" class="row playlist-hints">
+        <div class="col-6 col-sm-11 col-md-6 col-lg-9 col-xl-8 px-4 py-4 my-4 mx-auto">
+          <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="text-center">
+              <!-- <img src="./img/hint.svg" class="playlist-hints-img"> -->
+            </div>            
+            <span class="playlist-hints-text py-4 px-2 px-lg-0 pl-lg-4">
+              <h2>La Revolución de la Industria Musical</h2>
+
+              Somos la nueva App de streaming musical, red social y marketplace de NFT’s integrado en Blockchain con ganancias en criptomonedas
+            </span>
+          </div>         
+        </div>
+      </if>
+    </if>
+    <if is="${ this.wrongPlaylistHash }" class="d-block search-alert alert alert-danger">
+      No hay una lista de reproducción válida con ese hash
+      <a state="app">
+        <button 
+          type="button" 
+          class="close"
+          data-dismiss="alert" 
+          aria-label="Close" 
+          on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </a>      
+    </if>
+  </div>  
+</div>

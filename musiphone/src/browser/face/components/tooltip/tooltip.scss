@@ -1,0 +1,30 @@
+@import '../../styles/vars.scss';
+@import '~bootstrap/scss/bootstrap-grid.scss';
+
+$sizes: xs, sm, md, lg, xl;
+
+@for $i from 1 through length($sizes) {
+  $item: nth($sizes, $i);
+
+  @include media-breakpoint-up($item) { 
+    [data-tippy-root] {
+      max-width: #{(100 - $i * 10)}vw;
+    }
+  }
+}
+
+.tippy-box {
+  opacity: 0.9;
+  background: black;
+  max-width: 90vw;
+}
+
+.tippy-arrow {
+  color: black;
+}
+
+.tippy-content {
+  font-size: 0.9em;
+  word-break: break-all;
+  padding: 0.8em 1em;
+}
